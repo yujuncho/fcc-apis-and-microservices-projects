@@ -1,7 +1,4 @@
 const express = require("express");
-
-const PORT = process.env.PORT || 3001;
-
 const app = express();
 
 // Root for API
@@ -32,6 +29,4 @@ app.get('/api/timestamp/:date', (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`Server listening on ${PORT}`);
-});
+module.exports = app;
