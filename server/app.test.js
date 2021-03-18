@@ -1,6 +1,5 @@
 const app = require('./app');
 const request = require('supertest');
-const { response } = require('express');
 
 beforeAll(() => {
     process.env.NODE_ENV = 'test';
@@ -55,7 +54,7 @@ describe('GET /api/timestamp/:date', () => {
                 .get("/api/timestamp/1451001600")
                 .expect(400)
                 .then(response => {
-                    expect(response.body.message).toBe('Incorrect date format :/ Please provide an epoch in milliseconds or use the format yyyy-mm-dd');
+                    expect(response.body.error).toBe('Incorrect date format :/ Please provide an epoch in milliseconds or use the format yyyy-mm-dd');
                 });
     });
 
@@ -65,7 +64,7 @@ describe('GET /api/timestamp/:date', () => {
                 .get("/api/timestamp/20151225")
                 .expect(400)
                 .then(response => {
-                    expect(response.body.message).toBe('Incorrect date format :/ Please provide an epoch in milliseconds or use the format yyyy-mm-dd');
+                    expect(response.body.error).toBe('Incorrect date format :/ Please provide an epoch in milliseconds or use the format yyyy-mm-dd');
                 });
     });
 
@@ -75,7 +74,7 @@ describe('GET /api/timestamp/:date', () => {
                 .get("/api/timestamp/14510016000002015-12-25")
                 .expect(400)
                 .then(response => {
-                    expect(response.body.message).toBe('Incorrect date format :/ Please provide an epoch in milliseconds or use the format yyyy-mm-dd');
+                    expect(response.body.error).toBe('Incorrect date format :/ Please provide an epoch in milliseconds or use the format yyyy-mm-dd');
                 });
     });
 
@@ -85,27 +84,52 @@ describe('GET /api/timestamp/:date', () => {
                 .get("/api/timestamp/")
                 .expect(400)
                 .then(response => {
-                    expect(response.body.message).toBe('Incorrect date format :/ Please provide an epoch in milliseconds or use the format yyyy-mm-dd');
+                    expect(response.body.error).toBe('Incorrect date format :/ Please provide an epoch in milliseconds or use the format yyyy-mm-dd');
                 });
     });
 });
 
 describe('GET /api/whoami', () => {
     test('200 with await and async', () => {
-        const IP_ADDRESS = "67.159.137.111";
+        const LOCALHOST = "127.0.0.1";
+        const LOCALHOST_IPV6 = "::ffff:127.0.0.1";
         const LANGUAGE = "en-US,en;q=0.5";
         const SOFTWARE = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:86.0) Gecko/20100101 Firefox/86.0";
 
         return request(app)
                 .get('/api/whoami')
-                .set('X-Forwarded-For', IP_ADDRESS)
+                .connect(LOCALHOST)
                 .set('Accept-Language', LANGUAGE) 
                 .set('User-Agent', SOFTWARE)
                 .expect(200)
                 .then(response => {
-                    expect(response.body.ipaddress).toBe(IP_ADDRESS);
+                    expect(response.body.ipaddress).toMatch(new RegExp(`^${LOCALHOST}$|^${LOCALHOST_IPV6}$`));
                     expect(response.body.language).toBe(LANGUAGE);
                     expect(response.body.software).toBe(SOFTWARE);
                 });
     });
 });
+
+describe('POST /api/shorturl/new', () => {
+    // TODO: Create a test for a valid URL
+    test('201 for a new valid URL', () => {
+        let data = {
+            url: "https://www.freecodecamp.org",
+        }
+        return request(app)
+                .post('/api/shorturl/new')
+                .send(data)
+                .set('Accept', 'application/json')
+                .expect('Content-Type', /json/)
+                .expect(201)
+                .then(response => {
+                    expect(response.body.original_url).toBe(data.url);
+                    expect(response.body.short_url).toMatch(/^[A-Za-z\d]{4}$/);
+                })
+    });
+    // TODO: Create a test for two requests with the same valid URL 
+    // TODO: Create a test for a request with an invalid or empty URL
+});
+
+// TODO: Connect to a test database
+// TODO: Create a GET test for /api/shorturl/:url

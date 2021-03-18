@@ -39,6 +39,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [
             ["express", "npm:4.17.1"],
             ["jest", "npm:26.6.3"],
+            ["nanoid", "npm:3.1.22"],
             ["path", "npm:0.12.7"],
             ["supertest", "npm:6.1.3"]
           ],
@@ -2554,6 +2555,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["fcc-apis-and-microservices-projects", "workspace:."],
             ["express", "npm:4.17.1"],
             ["jest", "npm:26.6.3"],
+            ["nanoid", "npm:3.1.22"],
             ["path", "npm:0.12.7"],
             ["supertest", "npm:6.1.3"]
           ],
@@ -4385,6 +4387,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/ms-npm-2.1.2-ec0c1512ff-9b65fb709b.zip/node_modules/ms/",
           "packageDependencies": [
             ["ms", "npm:2.1.2"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["nanoid", [
+        ["npm:3.1.22", {
+          "packageLocation": "./.yarn/cache/nanoid-npm-3.1.22-e0ab44a9c0-6a38c79981.zip/node_modules/nanoid/",
+          "packageDependencies": [
+            ["nanoid", "npm:3.1.22"]
           ],
           "linkType": "HARD",
         }]
