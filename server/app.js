@@ -7,7 +7,7 @@ app.get('/api', (req, res) => {
 });
 
 // Timestamep Microservice
-app.get('/api/timestamp/:date', (req, res) => {
+app.get('/api/timestamp/:date?', (req, res) => {
   const date = req.params.date;
   const unixRegex = /^\d{13}$/;
   const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
@@ -19,14 +19,24 @@ app.get('/api/timestamp/:date', (req, res) => {
     dateObj = new Date(date);
   }
 
-  console.log(`date: ${date}\ndateObj: ${dateObj}`);
+  // console.log(`date: ${date}\ndateObj: ${dateObj}`);
 
   if (dateObj) {
     res.json({ unix: dateObj.getTime(), utc: dateObj.toUTCString() });
   } else {
     res.status(400);
-    res.send('Incorrect date format :/ Please provide an epoch in milliseconds or use the format yyyy-mm-dd');
+    res.json({ message: "Incorrect date format :/ Please provide an epoch in milliseconds or use the format yyyy-mm-dd"} );
   }
+});
+
+app.get('/api/whoami', (req, res) => {
+  const IP = req.ip;
+  const LANGUAGE = req.headers['accept-language'];
+  const SOFTWARE = req.headers['user-agent'];
+
+  // console.log(req.headers);
+
+  res.json({ ipaddress: IP, language: LANGUAGE, software: SOFTWARE });
 });
 
 module.exports = app;
