@@ -111,11 +111,13 @@ describe('GET /api/whoami', () => {
 });
 
 describe('POST /api/shorturl/new', () => {
-    // TODO: Create a test for a valid URL
-    test('201 for a new valid URL', () => {
+    test('201 for a new valid URL', async () => {
+        expect.hasAssertions();
         let data = {
             url: "https://www.freecodecamp.org",
-        }
+        };
+
+        /* Promise method
         return request(app)
                 .post('/api/shorturl/new')
                 .send(data)
@@ -124,12 +126,80 @@ describe('POST /api/shorturl/new', () => {
                 .expect(201)
                 .then(response => {
                     expect(response.body.original_url).toBe(data.url);
-                    expect(response.body.short_url).toMatch(/^[A-Za-z\d]{4}$/);
+                    expect(response.body.short_url).toMatch(/^[\w\d-]{4}$/);
                 })
+         */
+        
+        // Async/await method
+        const response = await request(app)
+                                .post('/api/shorturl/new')
+                                .set('Accept', 'application/json')
+                                .send(data);
+        expect(response.header['content-type']).toMatch(/json/);
+        expect(response.status).toBe(201);
+        expect(response.body.original_url).toBe(data.url);
+        expect(response.body.short_url).toMatch(/^[\w\d-]{4}$/);
     });
-    // TODO: Create a test for two requests with the same valid URL 
-    // TODO: Create a test for a request with an invalid or empty URL
-});
 
+    // TODO: Connect to a database
+    /*
+    test('200 for a valid url which has already been shortened', async () => {
+        expect.hasAssertions();
+        let data = {
+            url: "https://www.freecodecamp.org"
+        };
+
+        const firstResponse = await request(app)
+                                .post('/api/shorturl/new')
+                                .set('Accept', 'application/json')
+                                .send(data);
+        expect(firstResponse.header['content-type']).toMatch(/json/);
+        expect(firstResponse.status).toBe(201);
+        expect(firstResponse.body.original_url).toBe(data.url);
+        expect(firstResponse.body.short_url).toMatch(/^[A-Za-z\d]{4}$/);
+
+        const secondResponse = await request(app)
+                                .post('/api/shorturl/new')
+                                .set('Accept', 'application/json')
+                                .send(data)
+        expect(firstResponse.header['content-type']).toMatch(/json/);
+        expect(firstResponse.status).toBe(200);
+        expect(secondResponse.body.original_url).toBe(data.url);
+        expect(secondResponse.body.short_url).toBe(firstResponse.body.short_url);
+    });
+    */
+
+    test ('400 for empty url, invalid url, and invalid hostname', async () => {
+        const emptyData = {
+            url: ""
+        };
+        const responseToEmpty = await request(app)
+                                .post('/api/shorturl/new')
+                                .set('Accept', 'application/json')
+                                .send(emptyData);
+        expect(responseToEmpty.header['content-type']).toMatch(/html/);
+        expect(responseToEmpty.status).toBe(400);
+
+        const invalidData = {
+            url: "freecodecamp.org"
+        };
+        const responseToInvalid = await request(app)
+                                .post('/api/shorturl/new')
+                                .set('Accept', 'application/json')
+                                .send(invalidData);
+        expect(responseToInvalid.header['content-type']).toMatch(/html/);
+        expect(responseToInvalid.status).toBe(400);
+
+        const invalidHostnameData = {
+            url: "https://www.freecodecamp-1234567890.org"
+        };
+        const responseToInvalidHostname = await request(app)
+                                            .post('/api/shorturl/new')
+                                            .set('Accept', 'application/json')
+                                            .send(invalidHostnameData);
+        expect(responseToInvalidHostname.header['content-type']).toMatch(/html/);
+        expect(responseToInvalidHostname.status).toBe(400);
+    });
+});
 // TODO: Connect to a test database
 // TODO: Create a GET test for /api/shorturl/:url

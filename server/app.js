@@ -51,28 +51,39 @@ app.post('/api/shorturl/new', (req, res, next) => {
   //console.log("req body ", req.body.url);
   try {
     const url = new URL(req.body.url);
-    dns.lookup(url.hostname, err => {
-      if (err) {
-        //console.log(err);
-        next(err);
+    dns.lookup(url.hostname, error => {
+      if (error) {
+        error.statusCode = 400;
+        //console.log(error);
+        next(error);
       } else {
         //console.log("success");
-        // TODO: Connect to a database
+        // TODO: Connect to a database and return 201 or 200 depending on if the item exists
         res.status(201);
         res.json({ original_url: req.body.url, short_url: nanoid(4) });
       }
     });
-  } catch (e) {
-    //console.log("caught error ", e);
-    if (e instanceof TypeError) {
-      res.status(400);
-      res.json({ error: "The url is invalid" });
+  } catch (error) {
+    if (error.code === "ERR_INVALID_URL") {
+      error.statusCode = 400;
+      //console.log("400: ", error);
+      next(error);
     } else {
-      next(e);
+      //console.log("500: ", error);
+      next(error);
     }
   }
-});
+})
 
-// TODO: Create a GET for /api/shorturl/:url
+// TODO: Finish implementing this GET for /api/shorturl/:shortUrl?
+app.get('/api/shorturl/:shortUrl?', (req, res) => {
+  res.send("This isn't implemented yet");
+  // TODO: throw a 400 if shortUrl is empty
+
+  // TODO: attempt to retrieve a shorturl from the database
+
+  // TODO: redirect to the saved longurl or throw a 404 if there is no saved longurl
+
+});
 
 module.exports = app;
