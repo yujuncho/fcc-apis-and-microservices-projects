@@ -1,7 +1,18 @@
 const express = require("express");
 const { nanoid } = require("nanoid");
 const dns = require("dns");
+const mongoose = require("mongoose");
+const dotenv = require("dotenv");
 const app = express();
+
+// Initialize .env
+dotenv.config();
+
+// Connect to database
+mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true }, error => {
+  if (error) console.log(error);
+  console.log(mongoose.connection.readyState);
+});
 
 // Body parsing middleware
 app.use(express.json());

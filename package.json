@@ -14,6 +14,12 @@
   },
   "scripts": {
     "start": "node server/server.js",
+    "debug": "node --inspect server/server.js",
     "test": "jest"
+  },
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "mongodb": "^3.6.5",
+    "mongoose": "^5.12.2"
   }
 }
