@@ -9,10 +9,7 @@ const app = express();
 dotenv.config();
 
 // Connect to database
-mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true }, error => {
-  if (error) console.log(error);
-  console.log(mongoose.connection.readyState);
-});
+mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 
 // Body parsing middleware
 app.use(express.json());
